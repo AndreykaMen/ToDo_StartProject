@@ -1,20 +1,21 @@
 import React from "react";
 import Task from "./Task";
 
-const TaskList = ( { task } ) => {
-  const taskElem = task.map( ( item ) => {
-    const { id, classItem, ...itemTask } = item;
+const TaskList = ( { task, onToggleCompleted } ) => {
+  const taskElement = task.map( item => {
+    const { id, classItem, ...taskProps } = item;
     return (
         <li key={ id } className={ classItem }>
           <Task
-              { ...itemTask }
+              onToggleCompleted={ () => onToggleCompleted( id, classItem ) }
+              { ...taskProps }
           />
         </li>
     );
   } );
   return (
       <ul className="todo-list">
-        { taskElem }
+        { taskElement }
       </ul>
   );
 };

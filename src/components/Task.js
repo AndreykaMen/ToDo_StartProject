@@ -1,11 +1,17 @@
 import React from "react";
 
-const Task = ( { description, createdItem, edit } ) => {
-  const inputEdit = edit ? <input type="text" className="edit" defaultValue="Editing task"/> : null;
+const Task = ( { done, description, createdItem, edit, onToggleCompleted, } ) => {
+
+  const inputEdit = edit
+      ? <input type="text" className="edit" defaultValue="Editing task"/>
+      : null;
   return (
       <>
         <div className="view">
-          <input className="toggle" type="checkbox"/>
+          <input className="toggle" type="checkbox"
+                 onClick={ onToggleCompleted }
+                 defaultChecked={ !!done }
+          />
           <label>
             <span className="description">{ description }</span>
             <span className="created">{ createdItem }</span>
