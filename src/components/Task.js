@@ -1,6 +1,6 @@
 import React from "react";
 
-const Task = ( { done, description, createdItem, edit, onToggleCompleted, } ) => {
+const Task = ( { done, description, createdItem, edit, onToggleCompleted, onDeletedTask } ) => {
 
   const inputEdit = edit
       ? <input type="text" className="edit" defaultValue="Editing task"/>
@@ -17,7 +17,7 @@ const Task = ( { done, description, createdItem, edit, onToggleCompleted, } ) =>
             <span className="created">{ createdItem }</span>
           </label>
           <button className="icon icon-edit"/>
-          <button className="icon icon-destroy"/>
+          <button className="icon icon-destroy" onClick={ onDeletedTask }/>
         </div>
         { inputEdit }
       </>

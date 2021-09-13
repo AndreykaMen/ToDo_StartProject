@@ -17,7 +17,7 @@ export default class App extends Component {
       {
         id: 1,
         done: false,
-        classItem: "editing",
+        classItem: null/*"editing"*/,
         description: "Editing task",
         createdItem: "created 5 minutes ago",
         edit: true
@@ -52,6 +52,17 @@ export default class App extends Component {
     } );
   };
 
+  onDeleteItem = ( id ) => {
+    this.setState( ( { taskData } ) => {
+      const idx = taskData.findIndex( ( el ) => el.id === id );
+      const [...copyArray] = taskData;
+      copyArray.splice( idx, 1 );
+      return {
+        taskData: copyArray
+      };
+    } );
+  };
+
   render() {
     return (
         <section className="todoapp">
@@ -62,6 +73,7 @@ export default class App extends Component {
           <section className="main">
             <TaskList task={ this.state.taskData }
                       onToggleCompleted={ this.onToggleCompleted }
+                      onDeleted={ this.onDeleteItem }
             />
             <Footer filter={ this.filterData }/>
           </section>
