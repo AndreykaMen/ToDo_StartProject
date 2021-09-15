@@ -6,38 +6,32 @@ import Footer from "./Footer";
 export default class App extends Component {
   maxId = 0;
   state = {
-    taskData: [
-      // {
-      //   id: 0,
-      //   done: false,
-      //   classItem: null,
-      //   description: "Completed task",
-      //   createdItem: "created 17 seconds ago",
-      //   edit: false
-      // },
-      // {
-      //   id: 1,
-      //   done: false,
-      //   classItem: null/*"editing"*/,
-      //   description: "Editing task",
-      //   createdItem: "created 5 minutes ago",
-      //   edit: true
-      // },
-      // {
-      //   id: 2,
-      //   done: false,
-      //   classItem: null,
-      //   description: "Active task",
-      //   createdItem: "created 5 minutes ago",
-      //   edit: false
-      // }
+    displayFilter: 'all',
+    taskData: [],
+    filterButtonData: [
+      { id: 'b0', classSelect: "all", filterName: 'All', toggle: true },
+      { id: 'b1', classSelect: 'active', filterName: 'Active', toggle: false },
+      { id: 'b2', classSelect: 'completed', filterName: 'Completed', toggle: false }
     ]
   };
-  filterButtonData = [
-    { id: 'b0', classSelect: "selected", filterName: 'All' },
-    { id: 'b1', classSelect: null, filterName: 'Active' },
-    { id: 'b2', classSelect: null, filterName: 'Completed' }
-  ];
+  filterItems = ( select ) => {
+    if ( select === 'all' ) return this.state.taskData;
+    if ( select === 'active' ) return this.state.taskData.filter( ( item ) => !item.done );
+    if ( select === 'completed' ) return this.state.taskData.filter( ( item ) => item.done );
+  };
+
+  selectedButton = ( id, classSelect ) => {
+    let [...copyFilterButtonData] = this.state.filterButtonData;
+    copyFilterButtonData.map( ( elem ) => {
+      elem.id === id ? elem.toggle = true : elem.toggle = false;
+      return elem;
+    } );
+    this.setState( {
+      displayFilter: classSelect,
+      copyFilterButtonData,
+    } );
+
+  };
 
   createTodoItem( description ) {
     return {
@@ -61,8 +55,8 @@ export default class App extends Component {
     } );
   };
 
-  onToggleCompleted = ( id, classItem ) => {
-    const newStateTask = this.state.taskData.map( ( elem ) => {
+  toggleCompleted = ( id, classItem ) => {
+    const [...newStateTask] = this.state.taskData.map( ( elem ) => {
       if ( elem.id === id ) {
         elem.done = !elem.done;
         elem.classItem = "completed";
@@ -75,13 +69,22 @@ export default class App extends Component {
     } );
   };
 
-  onDeleteItem = ( id ) => {
+  deleteItem = ( id ) => {
     this.setState( ( { taskData } ) => {
       const idx = taskData.findIndex( ( el ) => el.id === id );
-      // const [...copyArray] = taskData;
-      // copyArray.splice( idx, 1 );
-      taskData = taskData.filter( ( item, itemIdx ) => {
+      const copyTaskData = taskData.filter( ( item, itemIdx ) => {
         return itemIdx !== idx;
+      } );
+      return {
+        taskData: copyTaskData
+      };
+    } );
+  };
+
+  deleteCompletedList = () => {
+    this.setState( ( { taskData } ) => {
+      taskData = taskData.filter( ( item ) => {
+        return !item.done;
       } );
       return {
         taskData: taskData
@@ -90,6 +93,8 @@ export default class App extends Component {
   };
 
   render() {
+    const { displayFilter, taskData, filterButtonData } = this.state;
+    const countActiveTask = taskData.filter( ( el ) => !el.done ).length;
     return (
         <section className="todoapp">
           <header className="header">
@@ -97,11 +102,15 @@ export default class App extends Component {
             <NewTaskForm onItemAdded={ this.addItem }/>
           </header>
           <section className="main">
-            <TaskList task={ this.state.taskData }
-                      onToggleCompleted={ this.onToggleCompleted }
-                      onDeleted={ this.onDeleteItem }
+            <TaskList task={ this.filterItems( displayFilter ) }
+                      onToggleCompleted={ this.toggleCompleted }
+                      onDeleted={ this.deleteItem }
             />
-            <Footer filter={ this.filterButtonData }/>
+            <Footer filter={ filterButtonData }
+                    onSelectedButton={ this.selectedButton }
+                    deleteCompletedList={ this.deleteCompletedList }
+                    countActiveTask={ countActiveTask }
+            />
           </section>
         </section>
     );
